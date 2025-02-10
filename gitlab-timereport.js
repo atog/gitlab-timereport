@@ -7,6 +7,8 @@ const graphQlBase = "https://gitlab.com/api/graphql"
 dayjs.extend(utc);
 dayjs.extend(tz);
 
+const argv = require('minimist')(process.argv.slice(2));
+
 function getFormattedDateInTimezone(spentAt, timezone = "Europe/Brussels") {
   return dayjs(spentAt).tz(timezone).format("DD-MM-YYYY");
 }
@@ -103,3 +105,7 @@ const createCSV = (projectName, data) => {
   fs.writeFileSync(`${__dirname}/${filename}`, "\ufeff" + csvHeader + dataStrings.join("\r\n"), { encoding: "utf16le" });
   return filename;
 }
+
+const timeData = await getTimeReport(`gid://gitlab/Project/${argv.pid}`);
+const filename = createCSV(argv.name, timeData.map(({ node }) => node));
+console.log(`Report created: ${filename}`);
