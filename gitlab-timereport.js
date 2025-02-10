@@ -11,6 +11,21 @@ function getFormattedDateInTimezone(spentAt, timezone = "Europe/Brussels") {
   return dayjs(spentAt).tz(timezone).format("DD-MM-YYYY");
 }
 
+// https://stackoverflow.com/a/6313008
+function formatTimeSpent(time) {
+  let sec_num = parseInt(`${time}`, 10);
+  let hours = Math.floor(sec_num / 3600);
+  let minutes = Math.floor((sec_num - hours * 3600) / 60);
+
+  if (hours === 0) {
+    return `${minutes} minutes`;
+  } else if (minutes === 0) {
+    return `${hours} hours`;
+  } else {
+    return `${hours} hours and ${minutes} minutes`;
+  }
+}
+
 const getTimeReport = async (projectId) => {
   const graphQLClient = new GraphQLClient(graphQlBase, { headers: { authorization: `Bearer ${process.env.GITLAB_TOKEN}` }})
   const query = gql`
@@ -55,7 +70,7 @@ const getTimeReport = async (projectId) => {
   let data = await graphQLClient.request(query, variables)
   rvalue = [...rvalue, ...data.timelogs.edges]
   while(data.timelogs.pageInfo.hasNextPage) {
-    console.log(`fetch one more ${data.timelogs.pageInfo.endCursor}`)
+    console.log(`fetch one more page ${data.timelogs.pageInfo.endCursor}`)
     data = await graphQLClient.request(query, { ...variables, after: data.timelogs.pageInfo.endCursor })
     rvalue = [...rvalue, ...data.timelogs.edges]
   }
