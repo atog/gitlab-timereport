@@ -6,7 +6,7 @@ Make sure to set your gitlab api token in your environment as `GITLAB_TOKEN`.
 
 `bun ./gitlab-timereport.js --name={name} --pid={gitlab project id}`
 
-**name**: the name of your project, this will be used in the filename
+**name**: the name of your project, this will be used in the filename  
 **pid**: your gitlab project id
 
 A BOM is added so it should open nicely in Excel.
